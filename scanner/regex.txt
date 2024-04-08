@@ -1,0 +1,11 @@
+Identifier:[A-z][A-z0-9]*
+Variable:let
+Arrow:->
+Minus:-
+Plus:+
+GEThan:>=
+GThan:>
+LEThan:<=
+LThan:<
+Equals:==
+Assign:=
