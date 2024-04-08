@@ -1,6 +1,9 @@
 # Matheus -> "M", "a", ... == [A-z]
 # "M" == [A-z] -> True
 
+from typing import Optional
+
+
 ANY_CHAR = "A-z"
 ANY_NUMBER = "0-9"
 class Rule:
@@ -23,17 +26,20 @@ class Rule:
 
 #[A-z][A-z|0-9]*
 
-def regex_to_rule(regex: str) -> Rule:
+def regex_to_rule(regex: str) -> Optional[Rule]:
     if regex.startswith("["):
         if regex[-1] == "*":
             return Rule(regex[1:-2], repeatable=True)
         return Rule(regex[1:-1])
+    return None
+
+def regex_to_list_of_rule(regex: str) -> list["Rule"]:
     #['let'] -> ['l','e','t']
     return [Rule(ex) for ex in regex] #let
 
 def read(file_name):
     tokens = {}
-    with open("regex.txt", "r") as file:
+    with open(file_name, "r") as file:
         for line in file:
             parts = line.split(":", 1)
             token, regex = parts
@@ -52,6 +58,6 @@ def read(file_name):
                 for i in range(len(tokens[token])):  #['[A-z]', '[A-z|0-9]*'] || ['l','e','t']
                     tokens[token][i] = regex_to_rule(tokens[token][i]) # 
             else:
-                tokens[token] = Rule(regex_to_rule(regex))
+                tokens[token] = regex_to_list_of_rule(regex)
                 
     return tokens
