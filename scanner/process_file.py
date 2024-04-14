@@ -1,17 +1,24 @@
-from typing import List, Tuple
-from scanner.automaton import Automaton, Rule, read_tokens
+import os
+from typing import List
+from scanner.automaton import Automaton, Token
 
 def process_file(file_name: str, automatons: List[Automaton]) -> List[str]:
     tokens = []
-    with open(file_name, "r") as file:
-        for line in file:
-            word = line.strip()
-            # Verifica se algum autômato aceita o token
+    with open(file_name, "rb") as file:
+        while file.read(1) != b'':
+            file.seek(-1, 1)
+            while file.read(1) == b' ':
+                pass
+            file.seek(-1, 1)
+
+            biggest: Token | None = None
+            curr = file.tell()
             for automaton in automatons:
-                matched_length = automaton.match(word)
-                if matched_length == len(word):
-                    tokens.append(word)
-                    break  # Se um autômato aceitar o token, interrompe o loop
-            else:
-                print(f"Erro: A palavra '{word}' não corresponde ao padrão esperado.")
+                file.seek(curr)
+                token = automaton.match(file)
+                if biggest is None or token.size > biggest.size:
+                    biggest = token
+            tokens.append(biggest)
+            if biggest is not None:
+                curr = file.seek(biggest.end)
     return tokens

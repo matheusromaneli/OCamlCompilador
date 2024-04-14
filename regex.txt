@@ -1,4 +1,3 @@
-Identifier:[A-z][A-z0-9]*
 Variable:let
 Arrow:->
 Minus:-
@@ -9,3 +8,5 @@ LEThan:<=
 LThan:<
 Equals:==
 Assign:=
+Number:[0-9]*
+Identifier:[A-z][A-z0-9]*
