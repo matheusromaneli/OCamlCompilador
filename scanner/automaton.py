@@ -1,3 +1,4 @@
+from io import BufferedReader
 from .read_regex import Rule
 
 
@@ -13,7 +14,7 @@ class State:
     def has_transition_for(self, char: str):
         for transition in self.transitions:
             if transition.rule == char:
-                return transition
+                return transition.state
         return None
     
     def __str__(self):
@@ -36,6 +37,16 @@ class Transition:
     def __repr__(self) -> str:
         return self.__str__()
  
+class Token:
+    def __init__(self, start, end, token_type, token_value, size) -> None:
+        self.start = start
+        self.end = end
+        self.ttype = token_type
+        self.tvalue = str(token_value)
+        self.size = size 
+
+    def __repr__(self) -> str:
+        return f"<{self.ttype}>, ({self.tvalue})"
 
 class Automaton:
     def __init__(self, rules: list["Rule"], name: str="default"):
@@ -54,16 +65,30 @@ class Automaton:
             
             curr_state += 1
 
-    def match(self, word: str):
+    def match(self, file: BufferedReader) -> Token:
+        token_value = ""
+        start = file.tell()
+
         curr_state = self.states[0]
-        length_matched = 0
-        for letter in word:
-            transition = curr_state.has_transition_for(letter)
-            if transition is None:
-                return length_matched
-            curr_state = transition.state
-            length_matched += 1
-        return length_matched
+        _input = file.read(1).decode()
+        curr_state = curr_state.has_transition_for(_input)
+        token_value += _input
+
+        while curr_state is not None:
+            _input = file.read(1).decode()
+            curr_state = curr_state.has_transition_for(_input)
+            token_value += _input
+
+        end = file.tell()
+
+        if _input == '':
+            end += 1
+        else:
+            end -= 1
+            token_value = token_value[:-1]
+
+        size = end - start
+        return Token(start, end, self.name, token_value[:], size)
     
     def __str__(self):
         return f"""
@@ -74,7 +99,7 @@ class Automaton:
     
     def __repr__(self) -> str:
         return self.__str__()
-    
+
 def read_tokens(tokens: dict[str, list["Rule"]]):
     automatons = []
     for name,rules in tokens.items():
