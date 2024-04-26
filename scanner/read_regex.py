@@ -23,41 +23,49 @@ class Rule:
 
     def __str__(self):
         return f"{self.expression}{'(repeatable)' if self.repeatable else ''}"
+    
+    def __repr__(self) -> str:
+        return self.__str__()
 
-#[A-z][A-z|0-9]*
+def parse_regex(regex:str):
+    start = None
+    end = None
+    parsed = []
+    for index in range(len(regex)):
+        if regex[index] == '[':
+            start = index
+        if start is not None and regex[index] == ']':
+            end = index
+        if start is not None and end is not None:
+            parsed.append(regex[start+1:end])
+            start = None
+            end = None
+        elif start is None and end is None:
+            parsed.append(regex[index])
+    return parsed
+        
+def read_rules(expressions: list[str]):
+    rules = []
+    for index in range(len(expressions)):
+        if expressions[index] != '*':
+            expression = expressions[index]
+            repeatable = False
+            if index + 1 < len(expressions):
+                repeatable = expressions[index+1] == '*'                
+            rules.append(Rule(expression, repeatable))
+    return rules
 
-def regex_to_rule(regex: str) -> Optional[Rule]:
-    if regex.startswith("["):
-        if regex[-1] == "*":
-            return Rule(regex[1:-2], repeatable=True)
-        return Rule(regex[1:-1])
-    return None
-
-def regex_to_list_of_rule(regex: str) -> list["Rule"]:
-    #['let'] -> ['l','e','t']
-    return [Rule(ex) for ex in regex] #let
 
 def read(file_name):
     tokens = {}
     with open(file_name, "r") as file:
         for line in file:
-            parts = line.split(":", 1)
-            token, regex = parts
+            token, regex = line.split(":", 1)
 
             token = token.strip()  
-
-            #[A-z][A-z|0-9]*
             regex = regex.strip()
-            regex_parts = regex.split("]", 1)
+            parsed_regex = parse_regex(regex)
 
-            if "[" in regex:
-                regex_parts[0] = regex_parts[0]+"]"
-                tokens[token] = regex_parts
-
-                #Substituir a regex por uma regra
-                for i in range(len(tokens[token])):  #['[A-z]', '[A-z|0-9]*'] || ['l','e','t']
-                    tokens[token][i] = regex_to_rule(tokens[token][i]) # 
-            else:
-                tokens[token] = regex_to_list_of_rule(regex)
-                
+            rules = read_rules(parsed_regex)
+            tokens[token] = rules
     return tokens
