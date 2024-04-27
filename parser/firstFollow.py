@@ -85,7 +85,7 @@ class Grammar:
 
 # Usage
 grammar = Grammar()
-grammar.read_grammar('C:\\Users\\dario\\OneDrive\\Desktop\\uff\\CompiladoresFinal\\OCamlCompilador\\parser\\ebnf.txt')  # Replace with actual path to the grammar file
+grammar.read_grammar('C:\\Users\\engcl\\OneDrive\\Documentos\\UFF\\Compiladores\\OCamlCompilador\\parser\\ebnf.txt')  # Replace with actual path to the grammar file
 grammar.calculate_first()
 grammar.calculate_follow()
 grammar.display_first_follow()
