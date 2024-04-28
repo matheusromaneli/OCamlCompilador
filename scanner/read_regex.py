@@ -1,11 +1,7 @@
-# Matheus -> "M", "a", ... == [A-z]
-# "M" == [A-z] -> True
-
-from typing import Optional
-
-
 ANY_CHAR = "A-z"
 ANY_NUMBER = "0-9"
+
+# reserved = (, ), *, .
 class Rule:
 
     def __init__(self, expression: str, repeatable: bool = False) -> None:
@@ -27,34 +23,44 @@ class Rule:
     def __repr__(self) -> str:
         return self.__str__()
 
-def parse_regex(regex:str):
-    start = None
-    end = None
-    parsed = []
-    for index in range(len(regex)):
-        if regex[index] == '[':
-            start = index
-        if start is not None and regex[index] == ']':
-            end = index
-        if start is not None and end is not None:
-            parsed.append(regex[start+1:end])
-            start = None
-            end = None
-        elif start is None and end is None:
-            parsed.append(regex[index])
-    return parsed
+def parse_regex(regexes:list[str]):
+    parsed_regexes = []
+    for regex in regexes:
+        parsed = []
+        start = None
+        end = None
+        for index in range(len(regex)):
+            if regex[index] == '\\':
+                continue
+            if regex[index] == '[':
+                start = index
+            if start is not None and regex[index] == ']':
+                end = index
+            if start is not None and end is not None:
+                parsed.append(regex[start+1:end])
+                start = None
+                end = None
+            elif start is None and end is None:
+                if regex[index-1] == '\\' and regex[index] == 'n':
+                    parsed.append('\n')
+                else:
+                    parsed.append(regex[index])
+        parsed_regexes.append(parsed)
+    return parsed_regexes
         
-def read_rules(expressions: list[str]):
-    rules = []
-    for index in range(len(expressions)):
-        if expressions[index] != '*':
-            expression = expressions[index]
-            repeatable = False
-            if index + 1 < len(expressions):
-                repeatable = expressions[index+1] == '*'                
-            rules.append(Rule(expression, repeatable))
-    return rules
-
+def read_rules(multiple_expressions: list[list[str]]):
+    union_rules = []
+    for expressions in multiple_expressions:
+        rules = []
+        for index in range(len(expressions)):
+            if expressions[index] != '#':
+                expression = expressions[index]
+                repeatable = False
+                if index + 1 < len(expressions):
+                    repeatable = expressions[index+1] == '#'                
+                rules.append(Rule(expression, repeatable))
+        union_rules.append(rules)
+    return union_rules
 
 def read(file_name):
     tokens = {}
@@ -64,7 +70,8 @@ def read(file_name):
 
             token = token.strip()  
             regex = regex.strip()
-            parsed_regex = parse_regex(regex)
+            regex_union = regex.split("|")
+            parsed_regex = parse_regex(regex_union)
 
             rules = read_rules(parsed_regex)
             tokens[token] = rules

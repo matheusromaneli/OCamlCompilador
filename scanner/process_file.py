@@ -6,8 +6,9 @@ def scan(file_name: str, automatons: List[Automaton]) -> List[str]:
     with open(file_name, "rb") as file:
         while file.read(1) != b'':
             file.seek(-1, 1)
-            while file.read(1) == b' ':
-                pass
+            curr_input = file.read(1)
+            while curr_input == b' ':
+                curr_input = file.read(1)
             file.seek(-1, 1)
 
             biggest: Token | None = None
@@ -15,7 +16,7 @@ def scan(file_name: str, automatons: List[Automaton]) -> List[str]:
             for automaton in automatons:
                 file.seek(curr)
                 token = automaton.match(file)
-                if biggest is None or token.size > biggest.size:
+                if (biggest is None or token.size > biggest.size) and token.size > 0:
                     biggest = token
             tokens.append(biggest)
             if biggest is not None:

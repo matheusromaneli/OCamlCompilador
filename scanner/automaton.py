@@ -49,21 +49,22 @@ class Token:
         return f"<{self.ttype}>, ({self.tvalue})"
 
 class Automaton:
-    def __init__(self, rules: list["Rule"], name: str="default"):
+    def __init__(self, exp_rules: list[list["Rule"]], name: str="default"):
         self.states = [State("0")]
         self.name = name
-        curr_state=0
-        for rule in rules:
-            if rule.repeatable:
-                next_state = curr_state
-            else:
-                next_state = curr_state + 1
-                self.states.append(State(f"{next_state}"))
-
-            new_transition = Transition(self.states[next_state], rule)
-            self.states[curr_state].add_transition(new_transition)
-            
-            curr_state += 1
+        state_size = 0
+        for rules in exp_rules:
+            curr_state = 0
+            for rule in rules:
+                if rule.repeatable:
+                    next_state = curr_state
+                else:
+                    next_state = state_size + 1
+                    self.states.append(State(f"{next_state}"))
+                    state_size += 1
+                new_transition = Transition(self.states[state_size], rule)
+                self.states[curr_state].add_transition(new_transition)
+                curr_state = next_state
 
     def match(self, file: BufferedReader) -> Token:
         token_value = ""
@@ -100,7 +101,7 @@ class Automaton:
     def __repr__(self) -> str:
         return self.__str__()
 
-def create_automatons(tokens: dict[str, list["Rule"]]):
+def create_automatons(tokens: dict[str, list[list["Rule"]]]):
     automatons = []
     for name,rules in tokens.items():
         new_auto = Automaton(rules, name)
