@@ -1,8 +1,7 @@
-import os
 from typing import List
 from scanner.automaton import Automaton, Token
 
-def process_file(file_name: str, automatons: List[Automaton]) -> List[str]:
+def scan(file_name: str, automatons: List[Automaton]) -> List[str]:
     tokens = []
     with open(file_name, "rb") as file:
         while file.read(1) != b'':

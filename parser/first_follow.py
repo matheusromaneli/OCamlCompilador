@@ -1,5 +1,5 @@
 import re
-from collections import defaultdict, deque
+from collections import defaultdict
 
 class Grammar:
     def __init__(self):
@@ -84,8 +84,9 @@ class Grammar:
             print(f"{non_terminal}: {self.follow[non_terminal]}")
 
 # Usage
-grammar = Grammar()
-grammar.read_grammar('C:\\Users\\engcl\\OneDrive\\Documentos\\UFF\\Compiladores\\OCamlCompilador\\parser\\ebnf.txt')  # Replace with actual path to the grammar file
-grammar.calculate_first()
-grammar.calculate_follow()
-grammar.display_first_follow()
+if __name__ == "__main__":
+    grammar = Grammar()
+    grammar.read_grammar("files/ebnf.txt")  # Replace with actual path to the grammar file
+    grammar.calculate_first()
+    grammar.calculate_follow()
+    grammar.display_first_follow()

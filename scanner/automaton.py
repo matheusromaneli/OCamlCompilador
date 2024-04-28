@@ -100,7 +100,7 @@ class Automaton:
     def __repr__(self) -> str:
         return self.__str__()
 
-def read_tokens(tokens: dict[str, list["Rule"]]):
+def create_automatons(tokens: dict[str, list["Rule"]]):
     automatons = []
     for name,rules in tokens.items():
         new_auto = Automaton(rules, name)

@@ -1,7 +1,6 @@
-from firstFollow import Grammar
-from collections import defaultdict
+from parser.first_follow import Grammar
 
-class lookAheadTable: 
+class LookAheadTable: 
     def __init__(self, grammar):
         self.grammar = grammar
         self.tabelaLookAhead = {}
@@ -40,12 +39,13 @@ class lookAheadTable:
             non_terminal, symbol = key
             print(f"{non_terminal} -> {production} when lookahead is {symbol}")
             
-                
-grammar = Grammar()
-grammar.read_grammar('C:\\Users\\engcl\\OneDrive\\Documentos\\UFF\\Compiladores\\OCamlCompilador\\parser\\ebnf.txt')  # Substitua 'ebnf.txt' pelo caminho do seu arquivo com a gramática
-grammar.calculate_first()
-grammar.calculate_follow()
 
-table_generator = lookAheadTable(grammar)
-table_generator.createTable()
-table_generator.display_lookahead_table()
+if __name__ == "__main__":              
+    grammar = Grammar()
+    grammar.read_grammar("files/ebnf.txt")  # Substitua 'ebnf.txt' pelo caminho do seu arquivo com a gramática
+    grammar.calculate_first()
+    grammar.calculate_follow()
+
+    table_generator = LookAheadTable(grammar)
+    table_generator.createTable()
+    table_generator.display_lookahead_table()
