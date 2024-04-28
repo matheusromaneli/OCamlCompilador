@@ -18,7 +18,9 @@ def scan(file_name: str, automatons: List[Automaton]) -> List[str]:
                 token = automaton.match(file)
                 if (biggest is None or token.size > biggest.size) and token.size > 0:
                     biggest = token
-            tokens.append(biggest)
             if biggest is not None:
+                tokens.append(biggest)
                 curr = file.seek(biggest.end)
+            else:
+                print("Could not process:", curr_input)
     return tokens
