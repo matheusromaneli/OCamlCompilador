@@ -16,4 +16,4 @@ LThan:<
 Equals:==
 Assign:=
 Number:[0-9]#
-Identifier:[A-z][A-z0-9]#
+lowercase-ident:[A-z][A-z0-9]#

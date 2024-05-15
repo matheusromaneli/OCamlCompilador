@@ -30,13 +30,30 @@ look_ahead = {
     }
 }
 
-def parser(tokens: list["Token"], look_ahead):
-    pile =  look_ahead[("expr",tokens[0].ttype)]
-    tokens.pop(0)
-    curr_type = "expr"
-    print(tokens)
-    print(pile)
-    # for token in tokens:
-    #     current_rule = look_ahead[][token.ttype]
-    #     pile = current_rule + pile
-                
+def parser(tokens: list["Token"], look_ahead, curr_token: str, pile: list):
+    print(curr_token, tokens[0].tvalue,"\t\t", pile)
+    if tokens[0].ttype == "EOF": return True
+    if curr_token[0].isalpha():
+        options = look_ahead[curr_token].keys()
+        result = False
+        for option in options:
+            curr_rule = look_ahead[curr_token][option]
+            print("Current rule:", curr_rule)
+            print("Current option:", option)
+            if tokens[0].tvalue == option or tokens[0].ttype == option: # aplica regra do token
+                print("Accepted token:", tokens[0].tvalue)
+                result = parser(tokens[1:], look_ahead, option, curr_rule[1:]+pile[1:])
+            if result is False: # entra na regra até o terminal
+                result = parser(tokens, look_ahead, option, curr_rule+pile[1:])
+
+            if result == True:
+                return True
+        return False   
+    elif len(pile)>0 and pile[0].startswith("[") and pile[0].endswith("]"):
+        print("Optional parameter:", pile[0])
+        if tokens[0].tvalue == pile[0]:
+            print("Accepted token:", tokens[0].tvalue)
+            result = parser(tokens[1:], look_ahead, pile[1], pile[1:])
+        else:
+            result = parser(tokens, look_ahead, pile[1], pile[1:])
+    

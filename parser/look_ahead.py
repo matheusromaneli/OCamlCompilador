@@ -42,13 +42,3 @@ class LookAheadTable:
                 print(f"\t{symbol}: ")
                 print("\t\t",self.tabelaLookAhead[key][symbol])
             
-
-if __name__ == "__main__":              
-    grammar = Grammar()
-    grammar.read_grammar("files/ebnf.txt")  # Substitua 'ebnf.txt' pelo caminho do seu arquivo com a gramática
-    grammar.calculate_first()
-    grammar.calculate_follow()
-
-    table_generator = LookAheadTable(grammar)
-    table_generator.createTable()
-    table_generator.display_lookahead_table()

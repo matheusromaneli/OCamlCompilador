@@ -89,7 +89,7 @@ class Automaton:
             token_value = token_value[:-1]
 
         size = end - start
-        return Token(start, end, self.name, token_value[:], size)
+        return Token(start, end, self.name, '"'+token_value[:]+'"', size)
     
     def __str__(self):
         return f"""

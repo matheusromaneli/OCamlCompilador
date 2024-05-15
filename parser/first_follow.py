@@ -83,10 +83,3 @@ class Grammar:
         for non_terminal in sorted(self.follow):
             print(f"{non_terminal}: {self.follow[non_terminal]}")
 
-# Usage
-if __name__ == "__main__":
-    grammar = Grammar()
-    grammar.read_grammar("files/ebnf.txt")  # Replace with actual path to the grammar file
-    grammar.calculate_first()
-    grammar.calculate_follow()
-    grammar.display_first_follow()

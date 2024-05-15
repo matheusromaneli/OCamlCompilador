@@ -21,4 +21,8 @@ table_generator = LookAheadTable(grammar)
 table_generator.createTable()
 table_generator.display_lookahead_table()
 
-parser(file_tokens, table_generator.tabelaLookAhead)
+print("Starting parser...")
+
+semantic_errors = parser(file_tokens, table_generator.tabelaLookAhead, "expr", [])
+
+print("Success: ", semantic_errors)
