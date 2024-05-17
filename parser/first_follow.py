@@ -37,26 +37,29 @@ class Grammar:
 
     def calculate_first(self):
         def first_of(symbol):
+            if symbol == "expr":
+                print(self.first[symbol])
             if symbol in self.terminals:
                 return {symbol}
             if symbol in computed:
                 return self.first[symbol]
             computed.add(symbol)
             result = set()
+            # print(self.productions[symbol])
             for production in self.productions[symbol]:
-                for element in production:
-                    sym_first = first_of(element)
+                if len(production) > 0:
+                    sym_first = first_of(production[0])
                     result.update(sym_first - {'epsilon'})
-                    if 'epsilon' not in sym_first:
-                        break
+                    
                 else:
                     result.add('epsilon')
-            self.first[symbol] = result
+            self.first[symbol].update(result)
             return result
 
         computed = set()
         for non_terminal in self.non_terminals:
-            first_of(non_terminal)
+            result_aux = first_of(non_terminal)
+            # self.first[non_terminal].update(result_aux)
 
     def calculate_follow(self):
         for non_terminal in self.non_terminals:
@@ -98,12 +101,12 @@ grammar = Grammar('files\\ebnf.txt')
 # for lhs, rhs in grammar.productions.items():
 #     print(lhs, "->", rhs)
 
-print("First Sets:")
-for nt, f in grammar.first.items():
-    print(f"FIRST({nt}) = {f}")
+# print("First Sets:")
+# for nt, f in grammar.first.items():
+#     print(f"FIRST({nt}) = {f}")
 
 
-print("Follow Sets:")
-for nt, f in grammar.follow.items():
-    print(f"FOLLOW({nt}) = {f}")
+# print("Follow Sets:")
+# for nt, f in grammar.follow.items():
+#     print(f"FOLLOW({nt}) = {f}")
 
