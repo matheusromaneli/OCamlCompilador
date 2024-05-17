@@ -15,11 +15,9 @@ grammar = Grammar('C:\\Users\\dario\\OneDrive\\Desktop\\uff\\CompiladoresFinal\\
 
 
 table_generator = LookAheadTable(grammar)
-table_generator.createTable()
-table_generator.display_lookahead_table()
 
 print("Starting parser...")
 
-semantic_errors = parser(file_tokens, table_generator.tabelaLookAhead, "expr", [])
+semantic_errors = parser(file_tokens, table_generator.lookahead_table, "expr", [])
 
 print("Success: ", semantic_errors)

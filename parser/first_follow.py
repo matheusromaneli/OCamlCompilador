@@ -62,7 +62,7 @@ class Grammar:
         for non_terminal in self.non_terminals:
             self.follow[non_terminal] = set()
         self.follow[next(iter(self.non_terminals))].add('$')  
-        
+
         changed = True
         while changed:
             changed = False
@@ -98,9 +98,9 @@ grammar = Grammar('C:\\Users\\dario\\OneDrive\\Desktop\\uff\\CompiladoresFinal\\
 # for lhs, rhs in grammar.productions.items():
 #     print(lhs, "->", rhs)
 
-print("First Sets:")
-for nt, f in grammar.first.items():
-    print(f"FIRST({nt}) = {f}")
+# print("First Sets:")
+# for nt, f in grammar.first.items():
+#     print(f"FIRST({nt}) = {f}")
 
 
 # print("Follow Sets:")
