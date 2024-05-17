@@ -1,7 +1,7 @@
 EOL:\n
 LParenthesis:(
 RParenthesis:)
-Variable:let
+let-definition:let
 Loop:for|while
 In:in
 Arrow:->
