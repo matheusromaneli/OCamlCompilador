@@ -41,41 +41,30 @@ optional-module-path ::= [ module-path "." ]
 optional-extended-module-path ::= [ extended-module-path "." ]
  
 module-path ::= module-name module-path-tail
-module-path-tail ::= [ "." module-name module-path-tail ]
 
+module-path-tail ::= [ "." module-name module-path-tail ]
 
 extended-module-path ::= extended-module-name extended-module-path-tail
  
 extended-module-name ::= module-name | module-name "(" extended-module-path ")"
 
-
 typexpr ::= single-typexpr | composite-typexpr | polymorphic-typexpr
 
 single-typexpr ::= basic-typexpr | paren-typexpr | variant-typexpr
 
-basic-typexpr ::= "'" ident
-               | "_"
-               | typeconstr
+basic-typexpr ::= "'" ident | "_" | typeconstr
 
 paren-typexpr ::= "(" typexpr ")"
 
-composite-typexpr ::= typexpr "as" "'" ident
-                   | function-typexpr
-                   | tuple-typexpr
-                   | label-typexpr
+composite-typexpr ::= typexpr "as" "'" ident | function-typexpr | tuple-typexpr | label-typexpr
 
-function-typexpr ::= "[" [ "?" label-name ":" ] typexpr "->" typexpr "]"
-                   | typexpr "->" typexpr
+function-typexpr ::= "[" [ "?" label-name ":" ] typexpr "->" typexpr "]" | typexpr "->" typexpr
 
-tuple-typexpr ::= "(" typexpr { "," typexpr } ")" [ typeconstr ]
-               | "<" method-type { ";" method-type } [ ";" | ";.." ] ">"
+tuple-typexpr ::= "(" typexpr { "," typexpr } ")" [ typeconstr ] | "<" method-type { ";" method-type } [ ";" | ";.." ] ">"
 
 label-typexpr ::= typexpr typeconstr
 
-polymorphic-typexpr ::= polymorphic-variant-type
-                     | typexpr "#" classtype-path
-                     | "(" typexpr { "," typexpr } ")" "#" class-path
-
+polymorphic-typexpr ::= polymorphic-variant-type | typexpr "#" classtype-path | "(" typexpr { "," typexpr } ")" "#" class-path
 
 poly-typexpr ::= typexpr | parametric-typexpr
 
@@ -90,177 +79,75 @@ tag-spec-list ::= "[" tag-spec-first { "|" tag-spec } "]"
 restricted-tag-spec ::= "[>" [ tag-spec ] { "|" tag-spec } "]"
 
 full-tag-spec ::= "[<" [ "|" ] tag-spec-full { "|" tag-spec-full } [ ">" { "`" tag-name }+ ] "]"
-
  
-tag-spec-first ::= "`" tag-name [ "of" typexpr ]
-                 | "[" typexpr "]" | tag-spec
+tag-spec-first ::= "`" tag-name [ "of" typexpr ] | "[" typexpr "]" | tag-spec
 
-tag-spec ::= "`" tag-name [ "of" typexpr ]
-          | typexpr
+tag-spec ::= "`" tag-name [ "of" typexpr ] | typexpr
 
-tag-spec-full ::= "`" tag-name [ "of" "&" typexpr { "&" typexpr } ]
-               | typexpr
-
-
-
-
-
+tag-spec-full ::= "`" tag-name [ "of" "&" typexpr { "&" typexpr } ] | typexpr
 
 constant ::= numeric-literal | textual-literal | symbolic-literal | composite-literal | tag-literal
 
-numeric-literal ::= integer-literal
-                  | int32-literal
-                  | int64-literal
-                  | nativeint-literal
-                  | float-literal
+numeric-literal ::= integer-literal | int32-literal | int64-literal | nativeint-literal | float-literal
 
-textual-literal ::= char-literal
-                  | string-literal
+textual-literal ::= char-literal | string-literal
 
-symbolic-literal ::= "false"
-                   | "true"
-                   | "begin" "end"
-                   | "()"
-                   | "[]"
-                   | "[||]"
+symbolic-literal ::= "false" | "true" | "begin" "end" | "()" | "[]" | "[||]"
 
 composite-literal ::= constr
 
 tag-literal ::= "`" tag-name
 
-
 pattern ::= basic-pattern | complex-pattern | composite-pattern
 
-basic-pattern ::= value-name
-                | "_"
-                | constant
-                | "`" tag-name pattern
-                | "#" typeconstr
-                | module-path "." pattern-construct
+basic-pattern ::= value-name | "_" | constant | "`" tag-name pattern | "#" typeconstr | module-path "." pattern-construct
 
-pattern-construct ::= "(" pattern ")"
-                    | "[" pattern "]"
-                    | "[|" pattern "|]"
+pattern-construct ::= "(" pattern ")" | "[" pattern "]" | "[|" pattern "|]"
 
-complex-pattern ::= pattern "as" value-name
-                  | pattern ":" typexpr
-                  | pattern "|" pattern
-                  | pattern "::" pattern
-                  | constr pattern
-                  | lazy pattern
-                  | exception pattern
+complex-pattern ::= pattern "as" value-name | pattern ":" typexpr | pattern "|" pattern | pattern "::" pattern | constr pattern | lazy pattern | exception pattern
 
-composite-pattern ::= tuple-pattern
-                    | record-pattern
-                    | list-pattern
-                    | range-pattern
+composite-pattern ::= tuple-pattern | record-pattern | list-pattern | range-pattern
 
 tuple-pattern ::= "(" pattern { "," pattern } ")"
 
 record-pattern ::= "{" field-pattern { ";" field-pattern } [ ";" "_" ] [ ";" ] "}"
+
 field-pattern ::= field [ ":" typexpr ] [ "=" pattern ]
 
-list-pattern ::= "[" pattern { ";" pattern } [ ";" ] "]"
-               | "[|" pattern { ";" pattern } [ ";" ] "|]"
+list-pattern ::= "[" pattern { ";" pattern } [ ";" ] "]" | "[|" pattern { ";" pattern } [ ";" ] "|]"
 
 range-pattern ::= char-literal ".." char-literal
 
-
-
 expr ::= simple-expr | complex-expr | control-expr | data-structure-expr | module-expr
 
-simple-expr ::= value-path
-              | constant
-              | "`" tag-name expr
-              | prefix-symbol expr
-              | "-" expr
-              | "-." expr
-              | "lazy" expr
-              | "assert" expr
-              | object-expr
+simple-expr ::= value-path | constant | "`" tag-name expr | prefix-symbol expr | "-" expr | "-." expr | "lazy" expr | "assert" expr | object-expr
 
-complex-expr ::= "(" expr ")"
-               | "(" expr ":" typexpr ")"
-               | "(" expr "as" value-name ")"
-               | "begin" expr "end"
-               | expr infix-op expr
-               | expr "::" expr
-               | expr ";" expr
-               | expr "." field
-               | expr "." field "<-" expr
-               | expr ".(" expr ")"
-               | expr ".(" expr ") <-" expr
-               | expr ".[" expr "]"
-               | expr ".[" expr "] <-" expr
-               | expr "{" argument "}"
-               | function-call
+complex-expr ::= "(" expr ")" | "(" expr ":" typexpr ")" | "(" expr "as" value-name ")" | "begin" expr "end" | expr infix-op expr | expr "::" expr | expr ";" expr | expr "." field | expr "." field "<-" expr | expr ".(" expr ")" | expr ".(" expr ") <-" expr | expr ".[" expr "]" | expr ".[" expr "] <-" expr | expr "{" argument "}" | function-call
 
-parameter ::= pattern
-            | "~" label-name
-            | "~" (label-name [":" typexpr])
-            | "~" label-name ":" pattern
-            | "?" label-name
-            | "?" (label-name [":" typexpr] ["=" expr])
-            | "?" label-name ":" pattern
-            | "?" label-name ":" (pattern [":" typexpr] ["=" expr])
+parameter ::= pattern | "~" label-name | "~" (label-name [":" typexpr]) | "~" label-name ":" pattern | "?" label-name | "?" (label-name [":" typexpr] ["=" expr]) | "?" label-name ":" pattern | "?" label-name ":" (pattern [":" typexpr] ["=" expr])
 
+function-call ::= "function" pattern-matching | "fun" { parameter }+ [ ":" typexpr ] "->" expr | expr { argument }+
 
-function-call ::= "function" pattern-matching
-                | "fun" { parameter }+ [ ":" typexpr ] "->" expr
-                | expr { argument }+
+control-expr ::= "if" expr "then" expr ["else" expr] | "while" expr "do" expr "done" | "for" value-name "=" expr ("to" | "downto") expr "do" expr "done" | "try" expr "with" pattern-matching | "match" expr "with" pattern-matching
 
-control-expr ::= "if" expr "then" expr ["else" expr]
-               | "while" expr "do" expr "done"
-               | "for" value-name "=" expr ("to" | "downto") expr "do" expr "done"
-               | "try" expr "with" pattern-matching
-               | "match" expr "with" pattern-matching
-
-data-structure-expr ::= "[" expr { ";" expr } [";"] "]"
-                      | "[|" expr { ";" expr } [";"] "|]"
-                      | "{" field-expr { ";" field-expr } [";"] "}"
-                      | "{" expr "with" field-expr { ";" field-expr } [";"] "}"
-                      | "(<" expr { ";" expr } [";"] ">)"
+data-structure-expr ::= "[" expr { ";" expr } [";"] "]" | "[|" expr { ";" expr } [";"] "|]" | "{" field-expr { ";" field-expr } [";"] "}" | "{" expr "with" field-expr { ";" field-expr } [";"] "}" | "(<" expr { ";" expr } [";"] ">)"
 
 field-expr ::= field [ ":" typexpr ] [ "=" expr ]
 
-module-expr ::= "let" ["rec"] let-binding { "and" let-binding } "in" expr
-              | "let" "exception" constr-decl "in" expr
-              | "let" "module" module-name { "(" module-name ":" module-type ")" } [ ":" module-type ] "=" module-expr "in" expr
-              | "local-open"
-              | "(" expr ":>" typexpr ")"
-              | "(" expr ":" typexpr ":>" typexpr ")"
-              |module-path
-              | "struct" module-items "end"
-              | "module" "type" modtype-name "=" module-type
-              | "local-open"
+module-expr ::= "let" ["rec"] let-binding { "and" let-binding } "in" expr | "let" "exception" constr-decl "in" expr | "let" "module" module-name { "(" module-name ":" module-type ")" } [ ":" module-type ] "=" module-expr "in" expr | "local-open" | "(" expr ":>" typexpr ")" | "(" expr ":" typexpr ":>" typexpr ")" |module-path | "struct" module-items "end" | "module" "type" modtype-name "=" module-type | "local-open"
 
-exception-definition ::= "exception" constr-decl
-                       | "exception" constr-name "=" constr
+exception-definition ::= "exception" constr-decl | "exception" constr-name "=" constr
 
-let-binding ::= pattern "=" expr
-              | value-name { parameter } [":" typexpr] [":>" typexpr] "=" expr
-              | value-name ":" poly-typexpr "=" expr
+let-binding ::= pattern "=" expr | value-name { parameter } [":" typexpr] [":>" typexpr] "=" expr | value-name ":" poly-typexpr "=" expr
 
-argument ::= expr
-           | "~" label-name
-           | "~" label-name ":" expr
-           | "?" label-name
-           | "?" label-name ":" expr
+argument ::= expr | "~" label-name | "~" label-name ":" expr | "?" label-name | "?" label-name ":" expr
 
-pattern-matching ::= "|" pattern [ "when" expr ] "->" expr
-                   | pattern [ "when" expr ] "->" expr { "|" pattern [ "when" expr ] "->" expr }
+pattern-matching ::= "|" pattern [ "when" expr ] "->" expr | pattern [ "when" expr ] "->" expr { "|" pattern [ "when" expr ] "->" expr }
 
-
-local-open ::= "let" "open" module-path "in" expr
-             | module-path ".(" expr ")"
-             | module-path ".[" expr "]"
-             | module-path ".[|" expr "|]"
-             | module-path ".{" expr "}"
-             | module-path ".{<" expr ">}"
-
-
+local-open ::= "let" "open" module-path "in" expr | module-path ".(" expr ")" | module-path ".[" expr "]" | module-path ".[|" expr "|]" | module-path ".{" expr "}" | module-path ".{<" expr ">}"
 
 type-definition ::= "type" [ "nonrec" ] typedef-list
+
 typedef-list ::= typedef { "and" typedef }
 
 typedef ::= [ type-params ] typeconstr-name type-information
@@ -272,10 +159,13 @@ type-equation ::= "=" typexpr
 type-representation ::= variant-representation | record-representation | unit-representation
 
 variant-representation ::= "=" [|] constr-decl { "|" constr-decl }
+
 record-representation ::= "=" record-decl
+
 unit-representation ::= "=" "|"
 
 type-params ::= single-type-param | "(" type-param-list ")"
+
 type-param-list ::= type-param { "," type-param }
 
 type-param ::= [ ext-variance ] "'" ident
@@ -287,6 +177,7 @@ variance ::= "+" | "-"
 injectivity ::= "!"
 
 record-decl ::= "{" field-decl-list "}"
+
 field-decl-list ::= field-decl { ";" field-decl } [ ";" ]
 
 field-decl ::= [ "mutable" ] field-name ":" poly-typexpr
@@ -294,90 +185,93 @@ field-decl ::= [ "mutable" ] field-name ":" poly-typexpr
 type-constraint ::= "constraint" typexpr "=" typexpr
 
 constr-decl ::= basic-constr-decl | compound-constr-decl
+
 basic-constr-decl ::= constr-name | "[]" | "(::)"
+
 compound-constr-decl ::= ( constr-name | "[]" | "(::)" ) "of" constr-args
 
 constr-args ::= typexpr { "*" typexpr }
 
 exception-definition ::= "exception" exception-body
 
-exception-body ::= constr-decl
-                 | named-exception
+exception-body ::= constr-decl | named-exception
 
 named-exception ::= constr-name "=" constr
-
-
 
 class-type ::= labeled-class-type | class-body-type
 
 labeled-class-type ::= "[" [ "?" label-name ":" ] typexpr "->" class-type "]"
 
-class-body-type ::= object-definition
-                  | type-extension
-                  | module-class-body
+class-body-type ::= object-definition | type-extension | module-class-body
 
 object-definition ::= "object" [ "(" typexpr ")" ] class-field-spec-list "end"
+
 class-field-spec-list ::= { class-field-spec }
-type-extension ::= "[" typexpr-list "]" classtype-path
+
+çype-extension ::= "[" typexpr-list "]" classtype-path
+
 module-class-body ::= "let" "open" module-path "in" class-body-type
 
 class-field-spec ::= inherit-spec | value-spec | method-spec | constraint-spec
 
 inherit-spec ::= "inherit" class-body-type
+
 value-spec ::= "val" [ "mutable" ] [ "virtual" ] inst-var-name ":" typexpr
+
 method-spec ::= "method" [ "private" ] [ "virtual" ] method-name ":" poly-typexpr
+
 constraint-spec ::= "constraint" typexpr "=" typexpr
 
 class-expr ::= simple-class-expr | complex-class-expr
 
-simple-class-expr ::= class-path
-                    | "(" class-expr ")"
-                    | "new" class-path
-                    | object-class-body
+simple-class-expr ::= class-path | "(" class-expr ")" | "new" class-path | object-class-body
 
-complex-class-expr ::= class-expr arguments
-                     | class-expr type-annotation
-                     | function-class-expr
-                     | let-class-expr
+complex-class-expr ::= class-expr arguments | class-expr type-annotation | function-class-expr | let-class-expr
 
 arguments ::= { argument }
+
 type-annotation ::= ":" class-type
+
 function-class-expr ::= "fun" { parameter }+ "->" class-expr
+
 let-class-expr ::= "let" [ "rec" ] let-binding-list "in" class-expr
+
 let-binding-list ::= let-binding { "and" let-binding }
+
 object-class-body ::= "object" class-body "end"
 
 class-field ::= field-specification | initializer-spec
-field-specification ::= inherit-spec
-                      | value-field-spec
-                      | method-field-spec
+
+field-specification ::= inherit-spec | value-field-spec | method-field-spec
 
 value-field-spec ::= "val" [ "mutable" ] inst-var-name [ ":" typexpr ] "=" expr
+
 method-field-spec ::= "method" [ "private" ] method-name { parameter } [ ":" typexpr ] "=" expr
+
 initializer-spec ::= "initializer" expr
 
 class-definition ::= "class" class-binding-list
+
 class-binding-list ::= class-binding { "and" class-binding }
 
 class-binding ::= [ "virtual" ] "[" type-parameters "]" class-name { parameter } [ ":" class-type ] "=" class-expr
 
 class-specification ::= "class" class-spec-list
+
 class-spec-list ::= class-spec { "and" class-spec }
+
 class-spec ::= [ "virtual" ] "[" type-parameters "]" class-name ":" class-type
 
 classtype-definition ::= "class" "type" classtype-def-list
+
 classtype-def-list ::= classtype-def { "and" classtype-def }
+
 classtype-def ::= [ "virtual" ] "[" type-parameters "]" class-name "=" class-body-type
 
-
-module-type ::= modtype-path
-              | signature
-              | functor-definition
-              | module-type-combination
-              | module-type-constraint
-              | parenthesized-module-type
+module-type ::= modtype-path | signature | functor-definition | module-type-combination | module-type-constraint | parenthesized-module-type
 
 signature ::= "sig" specification-list "end"
+
 specification-list ::= { specification [ ";;" ] }
 
 functor-definition ::= "functor" "(" module-name ":" module-type ")" "->" module-type
@@ -385,52 +279,37 @@ functor-definition ::= "functor" "(" module-name ":" module-type ")" "->" module
 module-type-combination ::= module-type "->" module-type
 
 module-type-constraint ::= module-type "with" mod-constraint-list
+
 mod-constraint-list ::= mod-constraint { "and" mod-constraint }
 
 parenthesized-module-type ::= "(" module-type ")"
 
-mod-constraint ::= type-mod-constraint
-                 | module-equality-constraint
+mod-constraint ::= type-mod-constraint | module-equality-constraint
 
 type-mod-constraint ::= "type" [type-params] typeconstr type-equation { type-constraint }
 
 module-equality-constraint ::= "module" module-path "=" extended-module-path
 
-specification ::= val-declaration
-                | external-declaration
-                | type-definition
-                | exception-definition
-                | class-specification
-                | classtype-definition
-                | module-declaration
-                | module-type-assignment
-                | open-declaration
-                | include-declaration
+specification ::= val-declaration | external-declaration | type-definition | exception-definition | class-specification | classtype-definition | module-declaration | module-type-assignment | open-declaration | include-declaration
 
 val-declaration ::= "val" value-name ":" typexpr
 
 external-declaration ::= "external" value-name ":" typexpr "=" external-name
 
-module-declaration ::= "module" module-name ":" module-type
-                     | "module" module-name "(" module-name ":" module-type ")" ":" module-type
+module-declaration ::= "module" module-name ":" module-type | "module" module-name "(" module-name ":" module-type ")" ":" module-type
 
-module-type-assignment ::= "module" "type" modtype-name
-                         | "module" "type" modtype-name "=" module-type
+module-type-assignment ::= "module" "type" modtype-name | "module" "type" modtype-name "=" module-type
 
 open-declaration ::= "open" module-path
 
 include-declaration ::= "include" module-type
 
-
-module-expr ::= module-path
-              | module-structure
-              | module-functor
-              | module-application
-              | parenthesized-module-expr
-              | typed-module-expr
+module-expr ::= module-path | module-structure | module-functor | module-application | parenthesized-module-expr | typed-module-expr
 
 module-structure ::= "struct" module-items "end"
+
 module-items ::= { module-item ";;" }
+
 module-item ::= definition | expr
 
 module-functor ::= "functor" "(" module-name ":" module-type ")" "->" module-expr
@@ -441,16 +320,7 @@ parenthesized-module-expr ::= "(" module-expr ")"
 
 typed-module-expr ::= "(" module-expr ":" module-type ")"
 
-definition ::= let-definition
-             | external-definition
-             | type-definition
-             | exception-definition
-             | class-definition
-             | classtype-definition
-             | module-binding
-             | module-type-assignment
-             | open-module
-             | include-module
+definition ::= let-definition | external-definition | type-definition | exception-definition | class-definition | classtype-definition | module-binding | module-type-assignment | open-module | include-module
 
 let-definition ::= "let" ["rec"] let-binding { "and" let-binding }
 
@@ -463,5 +333,3 @@ module-type-assignment ::= "module" "type" modtype-name "=" module-type
 open-module ::= "open" module-path
 
 include-module ::= "include" module-expr
-
-
