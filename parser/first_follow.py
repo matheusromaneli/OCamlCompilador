@@ -64,7 +64,7 @@ class Grammar:
                             follow_temp = self.first[symbol]
 
     def read_grammar(self, file_path):
-        with open(file_path, 'r') as file:
+        with open(file_path, 'r', encoding='UTF-8') as file:
             data = file.read()
         rules = data.split('\n')
         for rule in rules:

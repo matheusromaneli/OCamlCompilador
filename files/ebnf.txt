@@ -1,4 +1,4 @@
-value-name ::= lowercase-ident ∣ operator-name
+value-name ::= lowercase-ident | operator-name
 
 operator-name ::= prefix-symbol | infix-op
 
