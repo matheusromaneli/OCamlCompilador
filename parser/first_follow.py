@@ -37,15 +37,12 @@ class Grammar:
 
     def calculate_first(self):
         def first_of(symbol):
-            if symbol == "expr":
-                print(self.first[symbol])
             if symbol in self.terminals:
                 return {symbol}
             if symbol in computed:
                 return self.first[symbol]
             computed.add(symbol)
             result = set()
-            # print(self.productions[symbol])
             for production in self.productions[symbol]:
                 if len(production) > 0:
                     sym_first = first_of(production[0])
@@ -58,8 +55,7 @@ class Grammar:
 
         computed = set()
         for non_terminal in self.non_terminals:
-            result_aux = first_of(non_terminal)
-            # self.first[non_terminal].update(result_aux)
+            first_of(non_terminal)
 
     def calculate_follow(self):
         for non_terminal in self.non_terminals:

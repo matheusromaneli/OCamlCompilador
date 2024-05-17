@@ -118,7 +118,7 @@ list-pattern ::= "[" pattern { ";" pattern } [ ";" ] "]" | "[|" pattern { ";" pa
 
 range-pattern ::= char-literal ".." char-literal
 
-expr ::= simple-expr | complex-expr | control-expr | data-structure-expr | module-expr
+expr ::= simple-expr | complex-expr | control-expr | data-structure-expr | module-expr | var-exp
 
 simple-expr ::= value-path | constant | "`" tag-name expr | prefix-symbol expr | "-" expr | "-." expr | "lazy" expr | "assert" expr | object-expr
 
@@ -134,7 +134,7 @@ data-structure-expr ::= "[" expr { ";" expr } [";"] "]" | "[|" expr { ";" expr }
 
 field-expr ::= field [ ":" typexpr ] [ "=" expr ]
 
-module-expr ::= "let" ["rec"] let-binding { "and" let-binding } "in" expr | "let" "exception" constr-decl "in" expr | "let" "module" module-name { "(" module-name ":" module-type ")" } [ ":" module-type ] "=" module-expr "in" expr | "local-open" | "(" expr ":>" typexpr ")" | "(" expr ":" typexpr ":>" typexpr ")" |module-path | "struct" module-items "end" | "module" "type" modtype-name "=" module-type | "local-open"
+var-exp ::= "let" ["rec"] let-binding { "and" let-binding } "in" expr | "let" "exception" constr-decl "in" expr | "let" "module" module-name { "(" module-name ":" module-type ")" } [ ":" module-type ] "=" var-exp "in" expr | "local-open" | "(" expr ":>" typexpr ")" | "(" expr ":" typexpr ":>" typexpr ")" |module-path | "struct" module-items "end" | "module" "type" modtype-name "=" module-type | "local-open"
 
 exception-definition ::= "exception" constr-decl | "exception" constr-name "=" constr
 
