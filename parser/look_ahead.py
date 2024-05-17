@@ -25,13 +25,13 @@ class LookAheadTable:
                 first_group.add(symbol)
                 break
             elif symbol in self.grammar.non_terminals:
-                first_group.update(self.grammar.first[symbol] - {'ε'})
+                first_group.update(self.grammar.first[symbol] - {''})
                 if 'ε' not in self.grammar.first[symbol]:
                     break
             else:
                 break
         else:
-            first_group.add('ε')
+            first_group.add('')
         return first_group
     
     def display_lookahead_table(self):
