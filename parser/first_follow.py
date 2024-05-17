@@ -19,15 +19,20 @@ class Grammar:
                 if "::=" in line:
                     lhs, rhs = line.split("::=")
                     lhs = lhs.strip()
-                    rhs = [option.strip().split() for option in rhs.split("|")]
-                    self.productions[lhs] = rhs
+
+                    rhs = rhs.strip().split("|")
+                    aux_rhx = []
+                    for alt in rhs:
+                        aux_rhx.append(alt.strip().split())
+
+                    self.productions[lhs] = aux_rhx
                     self.non_terminals.add(lhs)
 
     def identify_terminals(self):
         all_symbols = set()
         for rhs in self.productions.values():
-            for option in rhs:
-                all_symbols.update(option)
+            for element in rhs:
+                all_symbols.update(element)
         self.terminals = all_symbols - self.non_terminals
 
     def calculate_first(self):
@@ -39,13 +44,13 @@ class Grammar:
             computed.add(symbol)
             result = set()
             for production in self.productions[symbol]:
-                for sym in production:
-                    sym_first = first_of(sym)
-                    result.update(sym_first - {''})
-                    if '' not in sym_first:
+                for element in production:
+                    sym_first = first_of(element)
+                    result.update(sym_first - {'epsilon'})
+                    if 'epsilon' not in sym_first:
                         break
                 else:
-                    result.add('')
+                    result.add('epsilon')
             self.first[symbol] = result
             return result
 
@@ -56,7 +61,7 @@ class Grammar:
     def calculate_follow(self):
         for non_terminal in self.non_terminals:
             self.follow[non_terminal] = set()
-        self.follow[next(iter(self.non_terminals))].add('$')  # Assume first non-terminal as start
+        self.follow[next(iter(self.non_terminals))].add('$')  
 
         changed = True
         while changed:
@@ -67,8 +72,8 @@ class Grammar:
                         if symbol in self.non_terminals:
                             next_first = set()
                             for j in range(i + 1, len(production)):
-                                next_first.update(self.first[production[j]] - {''})
-                                if '' not in self.first[production[j]]:
+                                next_first.update(self.first[production[j]] - {'epsilon'})
+                                if 'epsilon' not in self.first[production[j]]:
                                     break
                             else:
                                 next_first.update(self.follow[lhs])
@@ -77,22 +82,27 @@ class Grammar:
                             self.follow[symbol].update(next_first)
                             if before_update != len(self.follow[symbol]):
                                 changed = True
-                            if i == len(production) - 1 or '' in self.first[production[i + 1]]:
+                            if i == len(production) - 1 or 'epsilon' in self.first[production[i + 1]]:
                                 before_update = len(self.follow[symbol])
                                 self.follow[symbol].update(self.follow[lhs])
                                 if before_update != len(self.follow[symbol]):
                                     changed = True
 
-# Exemplo de uso
-grammar = Grammar('C:\\Users\\engcl\\OneDrive\\Documentos\\UFF\\Compiladores\\OCamlCompilador\\files\\ebnf.txt')
-print("Non-Terminals:", grammar.non_terminals)
-print("Terminals:", grammar.terminals)
-print("Productions:")
-for lhs, rhs in grammar.productions.items():
-    print(lhs, "->", rhs)
+# TESTANDO
+grammar = Grammar('files\\ebnf.txt')
+
+# print("Non-Terminals:", grammar.non_terminals)
+# print("Terminals:", grammar.terminals)
+
+# print("Productions:")
+# for lhs, rhs in grammar.productions.items():
+#     print(lhs, "->", rhs)
+
 print("First Sets:")
 for nt, f in grammar.first.items():
     print(f"FIRST({nt}) = {f}")
+
+
 print("Follow Sets:")
 for nt, f in grammar.follow.items():
     print(f"FOLLOW({nt}) = {f}")

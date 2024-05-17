@@ -1,44 +1,33 @@
 from collections import defaultdict
-from .first_follow import Grammar
+from parser.first_follow import Grammar
 
-class LookAheadTable: 
+class LookAheadTable:
     def __init__(self, grammar):
         self.grammar = grammar
-        self.tabelaLookAhead = defaultdict(lambda: defaultdict(list))
+        self.lookahead_table = self.build_lookahead_table()
 
-    def createTable(self) :
+    def build_lookahead_table(self):
+        lookahead_table = defaultdict(dict)
         for non_terminal, productions in self.grammar.productions.items():
             for production in productions:
-                first_group = self.calculate_first_group(production)
-                for symbol in first_group:
-                    if symbol != 'ε':
-                        self.tabelaLookAhead[non_terminal][symbol] =  production
-                if 'ε' in first_group:
-                    follow_group = self.grammar.follow[non_terminal]
-                    for symbol in follow_group:
-                        self.tabelaLookAhead[non_terminal][symbol] = production
+                lookaheads = set()
+                for symbol in production:
+                    lookaheads.update(self.grammar.first[symbol] - {'epsilon'})
+                    if 'epsilon' not in self.grammar.first[symbol]:
+                        break
+                else:
+                    lookaheads.update(self.grammar.follow[non_terminal])
+                for lookahead in lookaheads:
+                    lookahead_table[non_terminal][lookahead] = production
+        return lookahead_table
 
-    def calculate_first_group(self, production):
-        first_group = set()
-        for symbol in production:
-            if symbol in self.grammar.terminals:
-                first_group.add(symbol)
-                break
-            elif symbol in self.grammar.non_terminals:
-                first_group.update(self.grammar.first[symbol] - {''})
-                if 'ε' not in self.grammar.first[symbol]:
-                    break
-            else:
-                break
-        else:
-            first_group.add('')
-        return first_group
-    
     def display_lookahead_table(self):
-        print("Lookahead Table:")
-        for key in self.tabelaLookAhead:
-            print(key,":")
-            for symbol in self.tabelaLookAhead[key]:
-                print(f"\t{symbol}: ")
-                print("\t\t",self.tabelaLookAhead[key][symbol])
-            
+        for non_terminal, lookaheads in self.lookahead_table.items():
+            for lookahead, production in lookaheads.items():
+                print(f"Lookahead[{non_terminal}][{lookahead}] = {production}")
+
+# TESTE
+# grammar_file_path = 'C:\\Users\\dario\\OneDrive\\Desktop\\uff\\CompiladoresFinal\\OCamlCompilador\\files\\ebnf.txt'
+# grammar = Grammar(grammar_file_path)
+# lookahead_table = LookAheadTable(grammar)
+# lookahead_table.display_lookahead_table()
