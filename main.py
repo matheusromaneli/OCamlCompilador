@@ -11,11 +11,8 @@ automatons = create_automatons(tokens)
 
 file_tokens = scan("files/file.txt", automatons)
 
-grammar = Grammar()
-grammar.read_grammar("files/ebnf.txt")  # Replace with actual path to the grammar file
-grammar.calculate_first()
-grammar.calculate_follow()
-# grammar.display_first_follow()
+grammar = Grammar('C:\\Users\\dario\\OneDrive\\Desktop\\uff\\CompiladoresFinal\\OCamlCompilador\\files\\ebnf.txt')
+
 
 table_generator = LookAheadTable(grammar)
 table_generator.createTable()
