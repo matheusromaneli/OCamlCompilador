@@ -32,21 +32,25 @@ look_ahead = {
 
 def parser(tokens: list["Token"], look_ahead, curr_token: str, pile: list):
     print(curr_token, tokens[0].tvalue,"\t\t", pile)
-    if tokens[0].ttype == "EOF": return True
+    if tokens[0].ttype == "EOF": 
+        return True
     if curr_token[0].isalpha():
         options = look_ahead[curr_token].keys()
+        print("inside first with options:", options)
         result = False
+        if not options and (pile[0] == tokens[0].ttype or pile[0] == tokens[0].tvalue):
+            return parser(tokens[1:], look_ahead, pile[1], pile[1:])
         for option in options:
             curr_rule = look_ahead[curr_token][option]
             print("Current rule:", curr_rule)
             print("Current option:", option)
-            if tokens[0].tvalue == option or tokens[0].ttype == option: # aplica regra do token
+            if tokens[0].tvalue == curr_rule[0] or tokens[0].ttype == curr_rule[0]: # aplica regra do token
                 print("Accepted token:", tokens[0].tvalue)
                 result = parser(tokens[1:], look_ahead, option, curr_rule[1:]+pile[1:])
             if result is False: # entra na regra até o terminal
                 result = parser(tokens, look_ahead, option, curr_rule+pile[1:])
 
-            if result == True:
+            if result is True:
                 return True
         return False   
     elif len(pile)>0 and pile[0].startswith("[") and pile[0].endswith("]"):
