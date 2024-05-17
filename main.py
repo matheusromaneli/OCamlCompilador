@@ -11,13 +11,12 @@ automatons = create_automatons(tokens)
 
 file_tokens = scan("files/file.txt", automatons)
 
-grammar = Grammar('C:\\Users\\dario\\OneDrive\\Desktop\\uff\\CompiladoresFinal\\OCamlCompilador\\files\\ebnf.txt')
-
+grammar = Grammar("files/ebnf.txt")
 
 table_generator = LookAheadTable(grammar)
-
+table_generator.display_lookahead_table()
 print("Starting parser...")
 
-semantic_errors = parser(file_tokens, table_generator.lookahead_table, "expr", [])
+semantic_errors = parser(file_tokens, ["expr"], table_generator.lookahead_table)
 
 print("Success: ", semantic_errors)

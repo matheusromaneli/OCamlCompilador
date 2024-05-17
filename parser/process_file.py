@@ -1,63 +1,35 @@
-from scanner.automaton import Token
+from scanner.automaton import Token    
 
-tokens = [Token(0,0,"<if-stmt>", "if", 2), Token(0,0,"<exp>","0", 0), Token(0,0,"if-stmt","if", 0), Token(0,0,"exp","1", 0), Token(0,0,"stmt","other", 0), Token(0,0,"else-stmt","else", 0), Token(0,0,"stmt","other", 0)]
 
-rules = {
-    1: ("<stmt>", "<if-stmt>"),
-    2:("<stmt>","other"),
-    3:("<if-stmt>","if (<exp>) <stmt> <else-stmt>"),
-    4:("<else-stmt>","else <stmt>"),
-    5:("<else-stmt>",""),
-    6:("<exp>","0"),
-    7:("<exp>","1"),
-}
-
-look_ahead = {
-    "<stmt>": {
-        "if": 1,
-        "other": 2,
-    },
-    "<if-stmt>":{
-        "if": 3,
-    },
-    "<else-stmt>":{
-        "else":4,
-        "": 5,
-    },
-    "<exp>":{
-        "0": 6,
-        "1": 7,
-    }
-}
-
-def parser(tokens: list["Token"], look_ahead, curr_token: str, pile: list):
-    print(curr_token, tokens[0].tvalue,"\t\t", pile)
-    if tokens[0].ttype == "EOF": 
+def parser(tokens: list["Token"], pile: list, look_ahead):
+    print("Current pile:", pile)
+    curr_token = tokens[0]
+    if curr_token.ttype == "EOF":
         return True
-    if curr_token[0].isalpha():
-        options = look_ahead[curr_token].keys()
-        print("inside first with options:", options)
-        result = False
-        if not options and (pile[0] == tokens[0].ttype or pile[0] == tokens[0].tvalue):
-            return parser(tokens[1:], look_ahead, pile[1], pile[1:])
-        for option in options:
-            curr_rule = look_ahead[curr_token][option]
-            print("Current rule:", curr_rule)
-            print("Current option:", option)
-            if tokens[0].tvalue == curr_rule[0] or tokens[0].ttype == curr_rule[0]: # aplica regra do token
-                print("Accepted token:", tokens[0].tvalue)
-                result = parser(tokens[1:], look_ahead, option, curr_rule[1:]+pile[1:])
-            if result is False: # entra na regra até o terminal
-                result = parser(tokens, look_ahead, option, curr_rule+pile[1:])
+    curr_expr = pile[0]
+    curr_rule = look_ahead[curr_expr]
+    print("Currents:")
+    print("\ttoken: ", curr_token)
+    print("\texpr: ", curr_expr)
+    print("\trules: ", curr_rule)
+    print()
+    if not curr_rule:
+        if(curr_token.ttype == curr_expr or curr_token.tvalue == curr_expr): # terminal
+            print("Token readed:", curr_token.tvalue)
+            return parser(tokens[1:], pile[1:], look_ahead) # token readed
+        if(curr_expr.startswith("[")): #optional
+            print("Skipping... ", curr_expr)
+            return parser(tokens, pile[1:], look_ahead) # token skipped
 
-            if result is True:
-                return True
-        return False   
-    elif len(pile)>0 and pile[0].startswith("[") and pile[0].endswith("]"):
-        print("Optional parameter:", pile[0])
-        if tokens[0].tvalue == pile[0]:
-            print("Accepted token:", tokens[0].tvalue)
-            result = parser(tokens[1:], look_ahead, pile[1], pile[1:])
-        else:
-            result = parser(tokens, look_ahead, pile[1], pile[1:])
+    result = False
+    for option in curr_rule.keys():
+        if option == curr_token.tvalue or option == curr_token.ttype: # non-terminal            
+            next_rule = curr_rule[option]
+            print("read exp:", curr_expr, "with token:", curr_token.tvalue)
+            result = parser(tokens, next_rule + pile[1:], look_ahead) # branch rule
     
+        if result is True:
+            return True
+    
+    print("Unexpected", curr_token.tvalue, "at position:", curr_token.start)
+    return False

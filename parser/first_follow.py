@@ -89,7 +89,7 @@ class Grammar:
                                     changed = True
 
 # TESTANDO
-grammar = Grammar('C:\\Users\\dario\\OneDrive\\Desktop\\uff\\CompiladoresFinal\\OCamlCompilador\\files\\ebnf.txt')
+grammar = Grammar('files\\ebnf.txt')
 
 # print("Non-Terminals:", grammar.non_terminals)
 # print("Terminals:", grammar.terminals)
@@ -98,12 +98,12 @@ grammar = Grammar('C:\\Users\\dario\\OneDrive\\Desktop\\uff\\CompiladoresFinal\\
 # for lhs, rhs in grammar.productions.items():
 #     print(lhs, "->", rhs)
 
-# print("First Sets:")
-# for nt, f in grammar.first.items():
-#     print(f"FIRST({nt}) = {f}")
+print("First Sets:")
+for nt, f in grammar.first.items():
+    print(f"FIRST({nt}) = {f}")
 
 
-# print("Follow Sets:")
-# for nt, f in grammar.follow.items():
-#     print(f"FOLLOW({nt}) = {f}")
+print("Follow Sets:")
+for nt, f in grammar.follow.items():
+    print(f"FOLLOW({nt}) = {f}")
 

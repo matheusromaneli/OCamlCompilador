@@ -24,7 +24,7 @@ class LookAheadTable:
     def display_lookahead_table(self):
         for non_terminal, lookaheads in self.lookahead_table.items():
             for lookahead, production in lookaheads.items():
-                print(f"Lookahead[{non_terminal}, {lookahead}] = {production}")
+                print(f"Lookahead[{non_terminal}][{lookahead}] = {production}")
 
 # TESTE
 # grammar_file_path = 'C:\\Users\\dario\\OneDrive\\Desktop\\uff\\CompiladoresFinal\\OCamlCompilador\\files\\ebnf.txt'
