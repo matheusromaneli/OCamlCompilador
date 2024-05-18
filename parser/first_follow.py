@@ -44,14 +44,13 @@ class Grammar:
             computed.add(symbol)
             result = set()
             for production in self.productions[symbol]:
-                for element in production:
-                    sym_first = first_of(element)
+                if len(production) > 0:
+                    sym_first = first_of(production[0])
                     result.update(sym_first - {'epsilon'})
-                    if 'epsilon' not in sym_first:
-                        break
+                    
                 else:
                     result.add('epsilon')
-            self.first[symbol] = result
+            self.first[symbol].update(result)
             return result
 
         computed = set()
@@ -103,7 +102,7 @@ for nt, f in grammar.first.items():
     print(f"FIRST({nt}) = {f}")
 
 
-print("Follow Sets:")
-for nt, f in grammar.follow.items():
-    print(f"FOLLOW({nt}) = {f}")
+# print("Follow Sets:")
+# for nt, f in grammar.follow.items():
+#     print(f"FOLLOW({nt}) = {f}")
 
