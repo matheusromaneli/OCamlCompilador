@@ -97,9 +97,9 @@ grammar = Grammar('files\\ebnf.txt')
 # for lhs, rhs in grammar.productions.items():
 #     print(lhs, "->", rhs)
 
-# print("First Sets:")
-# for nt, f in grammar.first.items():
-#     print(f"FIRST({nt}) = {f}")
+print("First Sets:")
+for nt, f in grammar.first.items():
+    print(f"FIRST({nt}) = {f}")
 
 
 # print("Follow Sets:")
