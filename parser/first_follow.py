@@ -1,4 +1,4 @@
-from collections import defaultdict
+from collections import defaultdict, deque
 
 class Grammar:
     def __init__(self, grammar_file):
@@ -7,11 +7,13 @@ class Grammar:
         self.terminals = set()
         self.first = defaultdict(set)
         self.follow = defaultdict(set)
+        self.start_symbol = "expr"
+
 
         self.read_grammar(grammar_file)
         self.identify_terminals()
         self.calculate_first()
-        self.calculate_follow()
+        self.build_follow_set()
 
     def read_grammar(self, grammar_file):
         with open(grammar_file, 'r', encoding="utf-8") as file:
@@ -55,54 +57,84 @@ class Grammar:
         for non_terminal in self.non_terminals:
             first_of(non_terminal)
 
+   
+    def find_productions_with_non_terminal(self, non_terminal):
+        productions_with_non_terminal = []
+        for lhs, rhs_list in self.productions.items():
+            for rhs in rhs_list:
+                if non_terminal in rhs:
+                    productions_with_non_terminal.append((lhs, rhs))
+        return productions_with_non_terminal
 
-    def calculate_follow(self):
-        for non_terminal in self.non_terminals:
-            self.follow[non_terminal] = set()
-        self.follow[next(iter(self.non_terminals))].add('$')
+    def build_follow_set(self):
+        for nt in self.non_terminals:
+            self.calculate_follow(nt)
 
-        changed = True
-        while changed:
-            changed = False
-            for lhs, productions in self.productions.items():
-                for production in productions:
-                    for i, symbol in enumerate(production):
-                        if symbol in self.non_terminals:
-                            next_first = set()
-                            for j in range(i + 1, len(production)):
-                                next_first.update(self.first[production[j]] - {'epsilon'})
-                                if 'epsilon' not in self.first[production[j]]:
-                                    break
-                            else:
-                                next_first.update(self.follow[lhs])
 
-                            before_update = len(self.follow[symbol])
-                            self.follow[symbol].update(next_first)
-                            if before_update != len(self.follow[symbol]):
-                                changed = True
-                            if i == len(production) - 1 or 'epsilon' in self.first[production[i + 1]]:
-                                before_update = len(self.follow[symbol])
-                                self.follow[symbol].update(self.follow[lhs])
-                                if before_update != len(self.follow[symbol]):
-                                    changed = True
+    def calculate_follow(self, symbol):
+    # Se o conjunto de follow já foi calculado, retorna-o diretamente
+        if self.follow[symbol]:
+            return self.follow[symbol]
+
+        # Inicializa o conjunto de follow para o símbolo, se ainda não inicializado
+        if not self.follow[symbol]:
+            self.follow[symbol] = set()
+            if symbol == self.start_symbol:
+                self.follow[symbol].add('$')  # Adiciona o símbolo de fim de entrada para o símbolo inicial
+
+        # Encontra todas as produções que usam o símbolo
+        list_productions = self.find_productions_with_non_terminal(symbol)
+
+        for lhs, rhs in list_productions:
+            symbol_index = rhs.index(symbol)
+            follow_index = symbol_index + 1
+
+            while True:
+                if follow_index >= len(rhs):
+                    # Se o símbolo está no final do RHS, pegue o follow do LHS (exceto se LHS == símbolo para evitar loop infinito)
+                    if lhs != symbol:
+                        self.follow[symbol].update(self.calculate_follow(lhs))
+                    break
+
+                follow_symbol = rhs[follow_index]
+                # Adiciona todos os primeiros do símbolo seguinte no RHS ao follow do símbolo atual
+                self.follow[symbol].update(self.first[follow_symbol] - {'epsilon'})
+
+                # Se o primeiro do próximo símbolo não contém epsilon, pare aqui
+                if 'epsilon' not in self.first[follow_symbol]:
+                    break
+
+                follow_index += 1
+
+        return self.follow[symbol]
+
+
+
+       
+
+
 
 
 # TESTANDO
-grammar = Grammar('files\\ebnf.txt')
+grammar = Grammar("files\\ebnf.txt")
 
 # print("Non-Terminals:", grammar.non_terminals)
 # print("Terminals:", grammar.terminals)
 
-# print("Productions:")
-# for lhs, rhs in grammar.productions.items():
-#     print(lhs, "->", rhs)
+print("Productions:")
+for lhs, rhs in grammar.productions.items():
+    print(lhs, "->", rhs)
 
-print("First Sets:")
-for nt, f in grammar.first.items():
-    print(f"FIRST({nt}) = {f}")
+# print("First Sets:")
+# for nt, f in grammar.first.items():
+#     if f.__len__() > 0:
+#         print(f"FIRST({nt}) = {f}")
 
+teste = grammar.find_productions_with_non_terminal( "expr")
+print(teste)
 
 # print("Follow Sets:")
 # for nt, f in grammar.follow.items():
-#     print(f"FOLLOW({nt}) = {f}")
+#     if f.__len__() > 0:
+#         print(f"FOLLOW({nt}) = {f}")
 

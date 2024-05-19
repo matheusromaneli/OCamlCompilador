@@ -21,7 +21,6 @@ class LookAheadTable:
                     lookahead_table[non_terminal][lookahead] = production
         return lookahead_table
 
-
     def display_lookahead_table(self):
         for non_terminal, lookaheads in self.lookahead_table.items():
             for lookahead, production in lookaheads.items():
