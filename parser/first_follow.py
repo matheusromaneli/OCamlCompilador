@@ -71,37 +71,75 @@ class Grammar:
             self.calculate_follow(nt)
 
 
+    # def calculate_follow(self, symbol):
+    #     if self.follow[symbol]:
+    #         return self.follow[symbol]
+
+    #     if not self.follow[symbol]:
+    #         self.follow[symbol] = set()
+    #         if symbol == self.start_symbol:
+    #             self.follow[symbol].add('$') 
+
+    #     list_productions = self.find_productions_with_non_terminal(symbol)
+
+    #     for lhs, rhs in list_productions:
+    #         symbol_index = rhs.index(symbol)
+    #         follow_index = symbol_index + 1
+
+    #         while True:
+    #             if follow_index >= len(rhs):
+    #                 if lhs != symbol:
+    #                     self.follow[symbol].update(self.calculate_follow(lhs))
+    #                 break
+
+    #             follow_symbol = rhs[follow_index]
+    #             self.follow[symbol].update(self.first[follow_symbol] - {'epsilon'})
+
+    #             if 'epsilon' not in self.first[follow_symbol]:
+    #                 break
+
+    #             follow_index += 1
+
+    #     return self.follow[symbol]
+
     def calculate_follow(self, symbol):
-        if self.follow[symbol]:
+        # If the follow set for the symbol has already been calculated, return it.
+        if symbol in self.follow:
             return self.follow[symbol]
 
-        if not self.follow[symbol]:
-            self.follow[symbol] = set()
-            if symbol == self.start_symbol:
-                self.follow[symbol].add('$') 
+        # Initialize the follow set for the symbol if it hasn't been initialized.
+        self.follow[symbol] = set()
+        if symbol == self.start_symbol:
+            self.follow[symbol].add('$')  # Start symbol always contains '$' in its follow set.
 
+        # Find all productions where the symbol appears on the RHS.
         list_productions = self.find_productions_with_non_terminal(symbol)
-
         for lhs, rhs in list_productions:
             symbol_index = rhs.index(symbol)
             follow_index = symbol_index + 1
 
             while True:
-                if follow_index >= len(rhs):
-                    if lhs != symbol:
+                if follow_index == len(rhs):  # Check if it's the end of the production.
+                    if lhs != symbol:  # To avoid cases like B -> aB which can lead to infinite recursion.
                         self.follow[symbol].update(self.calculate_follow(lhs))
                     break
 
                 follow_symbol = rhs[follow_index]
-                self.follow[symbol].update(self.first[follow_symbol] - {'epsilon'})
+                first_of_follow_symbol = self.first[follow_symbol]
 
-                if 'epsilon' not in self.first[follow_symbol]:
+                # Exclude epsilon if it exists in the first set.
+                follow_without_epsilon = {x for x in first_of_follow_symbol if x != 'epsilon'}
+
+                # Merge the first set of the follow symbol, except for epsilon.
+                self.follow[symbol].update(follow_without_epsilon)
+
+                # If there is no epsilon in the first set, stop.
+                if 'epsilon' not in first_of_follow_symbol:
                     break
 
                 follow_index += 1
 
         return self.follow[symbol]
-
 
 
        
