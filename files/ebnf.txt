@@ -12,8 +12,6 @@ func_exp ::= "fun" identifier "->" expr
 
 assign_exp ::= identifier ":=" expr
 
-binary_exp ::= additive_exp
+math_exp ::= "+" math_op | "-" math_op | "*" math_op | "/" math_op
 
-math_exp ::= "+" math_exp_op | "-" math_exp_op | "*" math_exp_op | "/" math_exp_op
-
-math_exp_op ::= "(" expr ")" | identifier | int_literal | str_literal
+math_op ::= "(" expr ")" | identifier | int_literal | str_literal
