@@ -1,4 +1,4 @@
-from collections import defaultdict
+from collections import defaultdict, deque
 
 class Grammar:
     def __init__(self, grammar_file):
@@ -7,11 +7,13 @@ class Grammar:
         self.terminals = set()
         self.first = defaultdict(set)
         self.follow = defaultdict(set)
+        self.start_symbol = "expr"
+
 
         self.read_grammar(grammar_file)
         self.identify_terminals()
         self.calculate_first()
-        self.calculate_follow()
+        self.build_follow_set()
 
     def read_grammar(self, grammar_file):
         with open(grammar_file, 'r', encoding="utf-8") as file:
@@ -57,28 +59,60 @@ class Grammar:
         for non_terminal in self.non_terminals:
             first_of(non_terminal)
 
-    def calculate_follow(self):
-        # Start symbol (assuming the first non-terminal in the list is the start symbol)
-        start_symbol = next(iter(self.non_terminals))
-        self.follow[start_symbol].add('$')  # End of input symbol
+   
+    def find_productions_with_non_terminal(self, non_terminal):
+        productions_with_non_terminal = []
+        for lhs, rhs_list in self.productions.items():
+            for rhs in rhs_list:
+                if non_terminal in rhs:
+                    productions_with_non_terminal.append((lhs))
+        return productions_with_non_terminal
 
-        while True:
-            updated = False
-            for lhs in self.productions:
-                for production in self.productions[lhs]:
-                    follow_temp = self.follow[lhs].copy()
-                    for symbol in reversed(production):
-                        if symbol in self.non_terminals:
-                            if self.follow[symbol].update(follow_temp):
-                                updated = True
-                            if 'epsilon' in self.first[symbol]:
-                                follow_temp.update(self.first[symbol] - {'epsilon'})
-                            else:
-                                follow_temp = self.first[symbol].copy()
-                        else:
-                            follow_temp = self.first[symbol].copy()
-            if not updated:
-                break
+    def build_follow_set(self):
+        for nt in self.non_terminals:
+            self.calculate_follow(nt)
+
+
+    def calculate_follow(self, symbol):
+        # Initialize follow sets
+        if self.follow[symbol]:
+            return self.follow[symbol]
+        
+        self.follow[symbol] = set()
+
+        if symbol == self.start_symbol:
+            self.follow[symbol].add('$')
+
+        list_productions = self.find_productions_with_non_terminal(symbol)
+
+        for lhs in list_productions:
+            rhs_list = self.productions[lhs]
+            rhs = rhs_list[0]
+
+            symbol_index = rhs.index(symbol)
+            follow_index = symbol_index + 1 
+
+            while True:
+                if follow_index >= len(rhs):
+                    if lhs != symbol:
+                        self.follow[symbol].update(self.calculate_follow(lhs))
+                    break
+
+                follow_symbol = rhs[follow_index]
+
+                if follow_symbol in self.terminals:
+                    self.follow[symbol].add(follow_symbol)
+                    break
+
+                self.follow[symbol].update(self.first[follow_symbol] - {'epsilon'})
+                if 'epsilon' not in self.first[follow_symbol]:
+                    break
+
+                follow_index += 1
+
+       
+
+
 
 # TESTANDO
 grammar = Grammar('files\\ebnf.txt')
@@ -86,18 +120,20 @@ grammar = Grammar('files\\ebnf.txt')
 # print("Non-Terminals:", grammar.non_terminals)
 # print("Terminals:", grammar.terminals)
 
-# print("Productions:")
-# for lhs, rhs in grammar.productions.items():
-#     print(lhs, "->", rhs)
+print("Productions:")
+for lhs, rhs in grammar.productions.items():
+    print(lhs, "->", rhs)
 
-print("First Sets:")
-for nt, f in grammar.first.items():
-    if f.__len__() > 0:
-        print(f"FIRST({nt}) = {f}")
+# print("First Sets:")
+# for nt, f in grammar.first.items():
+#     if f.__len__() > 0:
+#         print(f"FIRST({nt}) = {f}")
 
+teste = grammar.find_productions_with_non_terminal( "expr")
+print(teste)
 
-print("Follow Sets:")
-for nt, f in grammar.follow.items():
-    if f.__len__() > 0:
-        print(f"FOLLOW({nt}) = {f}")
+# print("Follow Sets:")
+# for nt, f in grammar.follow.items():
+#     if f.__len__() > 0:
+#         print(f"FOLLOW({nt}) = {f}")
 
