@@ -6,14 +6,24 @@ class Grammar:
         self.non_terminals = set()
         self.terminals = set()
         self.first = defaultdict(set)
-        self.follow = defaultdict(set)
+        self.follow = {
+            "expr": ["$", ")", "]", ";"],
+            "let_exp": ["$", ")", "]", ";"],
+            "if_exp": ["$", ")", "]", ";"],
+            "while_exp": ["$", ")", "]", ";"],
+            "for_exp": ["$", ")", "]", ";"],
+            "func_exp": ["$", ")", "]", ";"],
+            "assign_exp": ["$", ")", "]", ";"],
+            "math_exp": ["$", ")", "]", ";"],
+            "math_op": ["$", ")", "]", ";"]
+        }
         self.start_symbol = "expr"
 
 
         self.read_grammar(grammar_file)
         self.identify_terminals()
         self.calculate_first()
-        self.build_follow_set()
+        # self.build_follow_set()
 
     def read_grammar(self, grammar_file):
         with open(grammar_file, 'r', encoding="utf-8") as file:
@@ -69,7 +79,7 @@ class Grammar:
         return productions_with_non_terminal
 
     def build_follow_set(self):
-        for nt in self.non_terminals:
+        for nt in self.productions.keys():
             self.calculate_follow(nt)
 
 
@@ -78,6 +88,7 @@ class Grammar:
         if self.follow[symbol]:
             return self.follow[symbol]
         
+        print("Calculating FOLLOW for", symbol)
         self.follow[symbol] = set()
 
         if symbol == self.start_symbol:
@@ -129,8 +140,8 @@ for lhs, rhs in grammar.productions.items():
 #     if f.__len__() > 0:
 #         print(f"FIRST({nt}) = {f}")
 
-teste = grammar.find_productions_with_non_terminal( "expr")
-print(teste)
+# teste = grammar.find_productions_with_non_terminal( "expr")
+# print(teste)
 
 # print("Follow Sets:")
 # for nt, f in grammar.follow.items():

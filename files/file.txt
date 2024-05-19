@@ -1,4 +1,4 @@
-let x = 3 + 5 * 10
+let x = (3 + 5 * 10)
 
 for b = 1 to 10 do
   x := x + 1

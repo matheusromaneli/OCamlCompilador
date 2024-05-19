@@ -1,7 +1,7 @@
 EOL:\n
-LParenthesis:(
+"(":(
 RParenthesis:)
-let-definition:let
+"let":let
 Loop:for|while
 In:in
 Arrow:->
@@ -14,6 +14,7 @@ GThan:>
 LEThan:<=
 LThan:<
 Equals:==
-Assign:=
+"=":=
+"in":=in
 Number:[0-9]#
-lowercase-ident:[A-z][A-z0-9]#
+identifier:[A-z][A-z0-9]#

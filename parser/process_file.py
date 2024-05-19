@@ -7,6 +7,7 @@ def parser(tokens: list["Token"], pile: list, look_ahead):
     if curr_token.ttype == "EOF":
         return True
     curr_expr = pile[0]
+    print(curr_expr, type(look_ahead[curr_expr]))
     curr_rule = look_ahead[curr_expr]
     print("Currents:")
     print("\ttoken: ", curr_token)
@@ -22,14 +23,14 @@ def parser(tokens: list["Token"], pile: list, look_ahead):
             return parser(tokens, pile[1:], look_ahead) # token skipped
 
     result = False
-    for option in curr_rule.keys():
-        if option == curr_token.tvalue or option == curr_token.ttype: # non-terminal            
-            next_rule = curr_rule[option]
-            print("read exp:", curr_expr, "with token:", curr_token.tvalue)
-            result = parser(tokens, next_rule + pile[1:], look_ahead) # branch rule
-    
-        if result is True:
-            return True
+    # for option in curr_rule.keys():
+    #   if option == curr_token.tvalue or option == curr_token.ttype: # non-terminal            
+    for next_rule in  curr_rule[curr_token.ttype]:
+        print("read exp:", curr_expr, "with token:", curr_token.tvalue)
+        result = parser(tokens, next_rule + pile[1:], look_ahead) # branch rule
+
+    if result is True:
+        return True
     
     print("Unexpected", curr_token.tvalue, "at position:", curr_token.start)
     return False
