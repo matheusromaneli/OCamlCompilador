@@ -19,14 +19,13 @@ class Grammar:
                 if "::=" in line:
                     lhs, rhs = line.split("::=")
                     lhs = lhs.strip()
-
                     rhs = rhs.strip().split("|")
                     aux_rhx = []
                     for alt in rhs:
                         aux_rhx.append(alt.strip().split())
-
                     self.productions[lhs] = aux_rhx
                     self.non_terminals.add(lhs)
+
 
     def identify_terminals(self):
         all_symbols = set()
@@ -47,7 +46,6 @@ class Grammar:
                 if len(production) > 0:
                     sym_first = first_of(production[0])
                     result.update(sym_first - {'epsilon'})
-                    
                 else:
                     result.add('epsilon')
             self.first[symbol].update(result)
@@ -57,10 +55,11 @@ class Grammar:
         for non_terminal in self.non_terminals:
             first_of(non_terminal)
 
+
     def calculate_follow(self):
         for non_terminal in self.non_terminals:
             self.follow[non_terminal] = set()
-        self.follow[next(iter(self.non_terminals))].add('$')  
+        self.follow[next(iter(self.non_terminals))].add('$')
 
         changed = True
         while changed:
@@ -86,6 +85,7 @@ class Grammar:
                                 self.follow[symbol].update(self.follow[lhs])
                                 if before_update != len(self.follow[symbol]):
                                     changed = True
+
 
 # TESTANDO
 grammar = Grammar('files\\ebnf.txt')
