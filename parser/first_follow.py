@@ -72,17 +72,14 @@ class Grammar:
 
 
     def calculate_follow(self, symbol):
-    # Se o conjunto de follow já foi calculado, retorna-o diretamente
         if self.follow[symbol]:
             return self.follow[symbol]
 
-        # Inicializa o conjunto de follow para o símbolo, se ainda não inicializado
         if not self.follow[symbol]:
             self.follow[symbol] = set()
             if symbol == self.start_symbol:
-                self.follow[symbol].add('$')  # Adiciona o símbolo de fim de entrada para o símbolo inicial
+                self.follow[symbol].add('$') 
 
-        # Encontra todas as produções que usam o símbolo
         list_productions = self.find_productions_with_non_terminal(symbol)
 
         for lhs, rhs in list_productions:
@@ -91,16 +88,13 @@ class Grammar:
 
             while True:
                 if follow_index >= len(rhs):
-                    # Se o símbolo está no final do RHS, pegue o follow do LHS (exceto se LHS == símbolo para evitar loop infinito)
                     if lhs != symbol:
                         self.follow[symbol].update(self.calculate_follow(lhs))
                     break
 
                 follow_symbol = rhs[follow_index]
-                # Adiciona todos os primeiros do símbolo seguinte no RHS ao follow do símbolo atual
                 self.follow[symbol].update(self.first[follow_symbol] - {'epsilon'})
 
-                # Se o primeiro do próximo símbolo não contém epsilon, pare aqui
                 if 'epsilon' not in self.first[follow_symbol]:
                     break
 
