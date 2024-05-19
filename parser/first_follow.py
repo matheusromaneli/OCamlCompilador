@@ -58,34 +58,27 @@ class Grammar:
             first_of(non_terminal)
 
     def calculate_follow(self):
-        for non_terminal in self.non_terminals:
-            self.follow[non_terminal] = set()
-        self.follow[next(iter(self.non_terminals))].add('$')  
+        # Start symbol (assuming the first non-terminal in the list is the start symbol)
+        start_symbol = next(iter(self.non_terminals))
+        self.follow[start_symbol].add('$')  # End of input symbol
 
-        changed = True
-        while changed:
-            changed = False
-            for lhs, productions in self.productions.items():
-                for production in productions:
-                    for i, symbol in enumerate(production):
+        while True:
+            updated = False
+            for lhs in self.productions:
+                for production in self.productions[lhs]:
+                    follow_temp = self.follow[lhs].copy()
+                    for symbol in reversed(production):
                         if symbol in self.non_terminals:
-                            next_first = set()
-                            for j in range(i + 1, len(production)):
-                                next_first.update(self.first[production[j]] - {'epsilon'})
-                                if 'epsilon' not in self.first[production[j]]:
-                                    break
+                            if self.follow[symbol].update(follow_temp):
+                                updated = True
+                            if 'epsilon' in self.first[symbol]:
+                                follow_temp.update(self.first[symbol] - {'epsilon'})
                             else:
-                                next_first.update(self.follow[lhs])
-
-                            before_update = len(self.follow[symbol])
-                            self.follow[symbol].update(next_first)
-                            if before_update != len(self.follow[symbol]):
-                                changed = True
-                            if i == len(production) - 1 or 'epsilon' in self.first[production[i + 1]]:
-                                before_update = len(self.follow[symbol])
-                                self.follow[symbol].update(self.follow[lhs])
-                                if before_update != len(self.follow[symbol]):
-                                    changed = True
+                                follow_temp = self.first[symbol].copy()
+                        else:
+                            follow_temp = self.first[symbol].copy()
+            if not updated:
+                break
 
 # TESTANDO
 grammar = Grammar('files\\ebnf.txt')
@@ -99,10 +92,12 @@ grammar = Grammar('files\\ebnf.txt')
 
 print("First Sets:")
 for nt, f in grammar.first.items():
-    print(f"FIRST({nt}) = {f}")
+    if f.__len__() > 0:
+        print(f"FIRST({nt}) = {f}")
 
 
-# print("Follow Sets:")
-# for nt, f in grammar.follow.items():
-#     print(f"FOLLOW({nt}) = {f}")
+print("Follow Sets:")
+for nt, f in grammar.follow.items():
+    if f.__len__() > 0:
+        print(f"FOLLOW({nt}) = {f}")
 

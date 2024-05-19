@@ -1,4 +1,4 @@
-expr ::= let_exp | if_exp | while_exp | for_exp | func_exp | assign_exp | binary_exp
+expr ::= let_exp | if_exp | while_exp | for_exp | func_exp | assign_exp | math_exp
 
 let_exp ::= "let" identifier "=" expr "in" expr
 
@@ -14,12 +14,6 @@ assign_exp ::= identifier ":=" expr
 
 binary_exp ::= additive_exp
 
-additive_exp ::= multiplicative_exp additive_exp_prime
+math_exp ::= "+" math_exp_op | "-" math_exp_op | "*" math_exp_op | "/" math_exp_op
 
-additive_exp_prime ::= "+" multiplicative_exp additive_exp_prime | "-" multiplicative_exp additive_exp_prime
-
-multiplicative_exp ::= primary_exp multiplicative_exp_prime
-
-multiplicative_exp_prime ::= "*" primary_exp multiplicative_exp_prime | "/" primary_exp multiplicative_exp_prime
-
-primary_exp ::= "(" expr ")" | identifier | int_literal | str_literal
+math_exp_op ::= "(" expr ")" | identifier | int_literal | str_literal
