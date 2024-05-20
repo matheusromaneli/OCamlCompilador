@@ -1,4 +1,4 @@
-expr ::= let_exp | if_exp | while_exp | for_exp | func_exp | assign_exp | math_exp
+expr ::= let_exp expr | if_exp expr | while_exp expr | for_exp expr | func_exp expr | assign_exp expr | math_exp expr
 
 let_exp ::= "let" identifier "=" expr
 
@@ -12,6 +12,12 @@ func_exp ::= "fun" identifier "->" expr
 
 assign_exp ::= identifier ":=" expr
 
+<<<<<<< HEAD
 math_exp ::= int_literal "+" math_op | int_literal "-" math_op | int_literal "*" math_op | int_literal "/" math_op
 
 math-op ::= "(" expr ")" | identifier | int_literal | str_literal
+=======
+math_exp ::= math_op "+" math_exp | math_op "-" math_exp | math_op "*" math_exp | math_op "/" math_exp
+
+math_op ::= "(" expr ")" | identifier | int_literal | str_literal | epsilon
+>>>>>>> 136dc3afceeb37b76f967176ae82e9ff687fb623

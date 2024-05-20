@@ -15,7 +15,7 @@ class Grammar:
             "func_exp": ["$", ")", "]", ";"],
             "assign_exp": ["$", ")", "]", ";"],
             "math_exp": ["$", ")", "]", ";"],
-            "math_op": ["$", ")", "]", ";"]
+            "math_op": ["$", ")", "]", ";", '"*"', '"/"', '"+"', '"-"']
         }
         self.start_symbol = "expr"
 
@@ -64,6 +64,8 @@ class Grammar:
             return result
 
         computed = set()
+        for terminal in self.terminals:
+            self.first[terminal] = {terminal}
         for non_terminal in self.non_terminals:
             first_of(non_terminal)
 
