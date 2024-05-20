@@ -67,7 +67,6 @@ class Grammar:
         for non_terminal in self.non_terminals:
             first_of(non_terminal)
 
-   
     def find_productions_with_non_terminal(self, non_terminal):
         productions_with_non_terminal = []
         for lhs, rhs_list in self.productions.items():
@@ -80,76 +79,42 @@ class Grammar:
         for nt in self.productions.keys():
             self.calculate_follow(nt)
 
-
-    # def calculate_follow(self, symbol):
-    #     if self.follow[symbol]:
-    #         return self.follow[symbol]
-
-    #     if not self.follow[symbol]:
-    #         self.follow[symbol] = set()
-    #         if symbol == self.start_symbol:
-    #             self.follow[symbol].add('$') 
-
-    #     list_productions = self.find_productions_with_non_terminal(symbol)
-
-    #     for lhs, rhs in list_productions:
-    #         symbol_index = rhs.index(symbol)
-    #         follow_index = symbol_index + 1
-
-    #         while True:
-    #             if follow_index >= len(rhs):
-    #                 if lhs != symbol:
-    #                     self.follow[symbol].update(self.calculate_follow(lhs))
-    #                 break
-
-    #             follow_symbol = rhs[follow_index]
-    #             self.follow[symbol].update(self.first[follow_symbol] - {'epsilon'})
-
-    #             if 'epsilon' not in self.first[follow_symbol]:
-    #                 break
-
-    #             follow_index += 1
-
-    #     return self.follow[symbol]
-
     def calculate_follow(self, symbol):
-        
-        if symbol in self.follow:
+        # Initialize follow sets
+        if self.follow[symbol]:
             return self.follow[symbol]
-        
-        print("Calculating FOLLOW for", symbol)
-        self.follow[symbol] = set()
-        if symbol == self.start_symbol:
-            self.follow[symbol].add('$')  
 
-        
+        self.follow[symbol] = set()
+
+        if symbol == self.start_symbol:
+            self.follow[symbol].add('$')
+
         list_productions = self.find_productions_with_non_terminal(symbol)
-        for lhs, rhs in list_productions:
+
+        for lhs in list_productions:
+            rhs_list = self.productions[lhs]
+            rhs = rhs_list[0]
+
             symbol_index = rhs.index(symbol)
-            follow_index = symbol_index + 1
+            follow_index = symbol_index + 1 
 
             while True:
-                if follow_index == len(rhs):  
-                    if lhs != symbol:  
+                if follow_index >= len(rhs):
+                    if lhs != symbol:
                         self.follow[symbol].update(self.calculate_follow(lhs))
                     break
 
                 follow_symbol = rhs[follow_index]
-                first_of_follow_symbol = self.first[follow_symbol]
 
-                
-                follow_without_epsilon = {x for x in first_of_follow_symbol if x != 'epsilon'}
+                if follow_symbol in self.terminals:
+                    self.follow[symbol].add(follow_symbol)
+                    break
 
-                
-                self.follow[symbol].update(follow_without_epsilon)
-
-                
-                if 'epsilon' not in first_of_follow_symbol:
+                self.follow[symbol].update(self.first[follow_symbol] - {'epsilon'})
+                if 'epsilon' not in self.first[follow_symbol]:
                     break
 
                 follow_index += 1
-
-        return self.follow[symbol]
 
 
        
@@ -163,9 +128,9 @@ grammar = Grammar("files\\ebnf.txt")
 # print("Non-Terminals:", grammar.non_terminals)
 # print("Terminals:", grammar.terminals)
 
-print("Productions:")
-for lhs, rhs in grammar.productions.items():
-    print(lhs, "->", rhs)
+# print("Productions:")
+# for lhs, rhs in grammar.productions.items():
+#     print(lhs, "->", rhs)
 
 # print("First Sets:")
 # for nt, f in grammar.first.items():

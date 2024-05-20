@@ -1,6 +1,6 @@
 expr ::= let_exp | if_exp | while_exp | for_exp | func_exp | assign_exp | math_exp
 
-let_exp ::= "let" identifier "=" expr "in" expr
+let_exp ::= "let" identifier "=" expr
 
 if_exp ::= "if" expr "then" expr "else" expr
 
@@ -12,33 +12,6 @@ func_exp ::= "fun" identifier "->" expr
 
 assign_exp ::= identifier ":=" expr
 
-math_exp ::= add_exp
+math_exp ::= int_literal "+" math_op | int_literal "-" math_op | int_literal "*" math_op | int_literal "/" math_op
 
-add_exp ::= mul_exp add_exp_tail
-
-add_exp_tail ::= "+" mul_exp add_exp_tail | "-" mul_exp add_exp_tail | ε
-
-mul_exp ::= primary mul_exp_tail
-
-mul_exp_tail ::= "*" primary mul_exp_tail | "/" primary mul_exp_tail | ε
-
-primary ::= "(" expr ")" | identifier | int_literal | str_literal
-
----
-expr ::= let_exp | if_exp | while_exp | for_exp | func_exp | assign_exp | math_exp
-
-let_exp ::= "let" identifier "=" expr "in" expr
-
-if_exp ::= "if" expr "then" expr "else" expr
-
-while_exp ::= "while" expr "do" expr "done"
-
-for_exp ::= "for" identifier "=" expr "to" expr "do" expr "done"
-
-func_exp ::= "fun" identifier "->" expr
-
-assign_exp ::= identifier ":=" expr
-
-math_exp ::= "+" math_op | "-" math_op | "*" math_op | "/" math_op
-
-math_op ::= "(" expr ")" | identifier | int_literal | str_literal
+math-op ::= "(" expr ")" | identifier | int_literal | str_literal
