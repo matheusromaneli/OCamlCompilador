@@ -18,6 +18,8 @@ class LookAheadTable:
                 possible_initial = [production[0]]
                 if not production[0].startswith('"'): # se não for reservado, ou seja, uma regra
                     possible_initial = self.grammar.first[production[0]] # pego o first da regra
+                if production[0] == "epsilon":
+                    possible_initial = self.grammar.follow[non_terminal]
                 for symbol in possible_initial:
                     lookaheads[non_terminal][symbol].append(production)
                 # for symbol in production:
@@ -28,6 +30,7 @@ class LookAheadTable:
                 #     lookaheads.update(self.grammar.follow[non_terminal])
                 # for lookahead in lookaheads:
                 #     lookahead_table[non_terminal][lookahead] = production
+        
         # return lookahead_table
         return lookaheads
 
